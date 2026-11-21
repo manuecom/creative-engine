@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Creative Engine</title>
+<style>
+:root{
+  --bg:#f6f7f9; --line:#e5e7eb; --line2:#d4d7dd; --ink:#111111; --ink2:#374151; --mute:#6b7280; --faint:#9ca3af; --hover:#f3f4f6;
+  --link:#1a56db; --green:#2f9e63; --amber:#d97706; --red:#d2473f;
+  --sw:290px;
+  --font:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14.5px;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+input,textarea{font-family:inherit}
+[hidden]{display:none !important}
+svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+.app{display:flex;height:100vh}
+
+/* ===== Sidebar ===== */
+.side{width:var(--sw);flex:none;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.side-head{padding:18px 16px 12px;border-bottom:1px solid var(--line)}
+.side-title{font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin:0 0 12px}
+.add-product{display:flex;gap:8px}
+.add-product input{flex:1;height:38px;border:1px solid var(--line2);border-radius:9px;background:#fafafa;padding:0 12px;font-size:14px;outline:none;min-width:0}
+.add-product button{width:38px;height:38px;border:0;border-radius:9px;background:var(--ink);color:#fff;font-size:22px;line-height:1;display:grid;place-items:center;flex:none}
+.add-product button:hover{background:#2a2a2a}
+.search{position:relative;margin-top:10px}
+.search input{width:100%;height:34px;border:1px solid var(--line);border-radius:9px;background:#fff;padding:0 10px 0 32px;font-size:13.5px;outline:none}
+.search svg{position:absolute;left:10px;top:9px;width:15px;height:15px;stroke:var(--faint);fill:none;stroke-width:2;stroke-linecap:round}
+input:focus,textarea:focus{border-color:var(--ink) !important;background:#fff;box-shadow:0 0 0 3px rgba(17,17,17,.07)}
+input::placeholder,textarea::placeholder{color:var(--faint)}
+.plist{flex:1;overflow-y:auto;padding:8px}
+.pitem{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 10px 9px 12px;border:0;background:none;border-radius:9px;font-size:14.5px;color:var(--ink2)}
+.pitem:hover{background:var(--hover)}
+.pitem.active{background:var(--ink);color:#fff}
+.pitem .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.pitem .cnt{display:flex;gap:4px;flex:none}
+.pitem .b{min-width:20px;height:20px;padding:0 6px;border-radius:999px;font-size:11.5px;font-weight:700;display:grid;place-items:center;background:var(--hover);color:var(--mute)}
+.pitem .b.curso{background:#fef3c7;color:#92400e}
+.pitem .b.cola{background:#e5e7eb;color:#374151}
+.pitem.active .b{background:rgba(255,255,255,.18);color:#fff}
+.pitem.all{font-weight:600;color:var(--ink);margin-bottom:6px}
+.pitem.all.active{color:#fff}
+.side-foot{padding:10px 16px;border-top:1px solid var(--line);display:flex;gap:14px;font-size:12.5px}
+.side-foot button{border:0;background:none;color:var(--faint);padding:0;font-size:12.5px}
+.side-foot button:hover{color:var(--ink);text-decoration:underline}
+
+/* ===== Main ===== */
+.main{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0}
+.m-head{display:flex;align-items:center;gap:12px;padding:18px 28px 14px;background:#fff;border-bottom:1px solid var(--line)}
+.m-title{flex:1;min-width:0;font-size:24px;font-weight:700;border:1px solid transparent;border-radius:8px;padding:4px 8px;margin-left:-8px;background:transparent;outline:none;width:100%}
+.m-title:hover{border-color:var(--line)}
+.m-title:focus{border-color:var(--ink) !important;box-shadow:none !important}
+.m-title[readonly]{pointer-events:none}
+.m-sub{color:var(--mute);font-size:13.5px;white-space:nowrap}
+.icon-btn{width:34px;height:34px;border:0;background:none;border-radius:8px;color:var(--faint);display:grid;place-items:center;flex:none}
+.icon-btn:hover{background:var(--hover);color:var(--ink)}
+.m-body{flex:1;overflow-y:auto;padding:22px 28px 60px}
+
+.add-ad{display:grid;grid-template-columns:1.2fr 1.4fr 1.6fr auto;gap:10px;margin-bottom:22px}
+.add-ad input{height:42px;border:1px solid var(--line2);border-radius:9px;background:#fff;padding:0 12px;font-size:14px;outline:none;min-width:0}
+.add-ad button{width:42px;height:42px;border:0;border-radius:9px;background:var(--ink);color:#fff;font-size:24px;line-height:1;display:grid;place-items:center}
+.add-ad button:hover{background:#2a2a2a}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:18px}
+.g-head{display:flex;align-items:center;gap:10px;padding:11px 16px;background:#fafafa;border-bottom:1px solid var(--line);font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.g-head .dot{width:9px;height:9px;border-radius:50%}
+.g-head .n{color:var(--faint);font-weight:600}
+.g-head .sp{flex:1}
+.g-head button{border:0;background:none;color:var(--faint);font-size:12px;font-weight:600;letter-spacing:0;text-transform:none}
+.g-head button:hover{color:var(--ink)}
+.dot.cola{background:#9ca3af}.dot.curso{background:var(--amber)}.dot.hecho{background:var(--green)}
+
+.row{display:grid;grid-template-columns:28px 1.2fr 1.4fr 1.6fr auto 28px;align-items:center;gap:8px;padding:6px 10px 6px 12px;border-top:1px solid #f0f1f3}
+.row:first-child{border-top:0}
+.row:hover{background:#fcfcfc}
+.row.all{grid-template-columns:28px 130px 1.2fr 1.4fr 1.6fr auto 28px}
+.row .prod{font-size:12.5px;font-weight:600;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.row .prod:hover{color:var(--ink);text-decoration:underline}
+.chk{width:20px;height:20px;border:2px solid var(--line2);border-radius:6px;background:#fff;padding:0;display:grid;place-items:center;margin:0 auto}
+.chk svg{width:12px;height:12px;fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.chk:hover{border-color:var(--ink)}
+.row.done .chk{background:var(--green);border-color:var(--green)}
+.row.done .chk svg{opacity:1}
+.cell{height:36px;border:1px solid transparent;border-radius:7px;background:transparent;padding:0 10px;font-size:14px;color:var(--ink);outline:none;width:100%;min-width:0}
+.cell:hover{border-color:var(--line)}
+.cell.t{font-weight:600}
+.cell.note{color:var(--ink2)}
+.row.done .cell.t{text-decoration:line-through;color:var(--faint);font-weight:500}
+.row.done .cell.note,.row.done .urlw .cell{color:var(--faint)}
+.ro{height:36px;display:block;line-height:36px;padding:0 10px;font-size:14px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.ro.t{font-weight:600}
+.ro.note{color:var(--ink2)}
+.ro a{color:var(--link);text-decoration:none}
+.ro a:hover{text-decoration:underline}
+.row.done .ro{color:var(--faint)}
+.row.done .ro.t{text-decoration:line-through;font-weight:500}
+.row.done .ro a{opacity:.7}
+.tip{position:fixed;z-index:20;max-width:460px;background:#fff;color:var(--ink);border:1px solid var(--line2);padding:10px 13px;border-radius:9px;font-size:13.5px;line-height:1.5;box-shadow:0 10px 30px rgba(0,0,0,.14);white-space:pre-wrap;overflow-wrap:anywhere;user-select:text}
+.tip a{color:var(--link)}
+.urlw{display:flex;align-items:center;gap:2px;min-width:0}
+.urlw .cell{color:var(--link)}
+.urlw a{width:30px;height:30px;border-radius:7px;color:var(--faint);display:grid;place-items:center;flex:none;opacity:0}
+.urlw:hover a,.row:hover .urlw a{opacity:1}
+.urlw a:hover{background:var(--hover);color:var(--ink)}
+.urlw a.off{visibility:hidden}
+.st{height:28px;padding:0 11px;border:0;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.02em;white-space:nowrap;min-width:84px}
+.st.cola{background:#eceef1;color:#4b5563}
+.st.curso{background:#fef3c7;color:#92400e}
+.st.hecho{background:#dcfce7;color:#166534}
+.st:hover{filter:brightness(.95)}
+.del{width:26px;height:26px;border:0;background:none;color:var(--faint);font-size:19px;line-height:1;border-radius:6px;opacity:0;display:grid;place-items:center;margin:0 auto}
+.row:hover .del{opacity:.6}
+.del:hover{opacity:1 !important;color:var(--ink);background:var(--hover)}
+.when{font-size:11.5px;color:var(--faint);white-space:nowrap;padding-left:4px}
+.empty{color:var(--faint);text-align:center;padding:40px 0}
+.empty-main{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--faint);gap:8px;font-size:15px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:9px 15px;border-radius:8px;font-size:13.5px;opacity:0;pointer-events:none;transition:all .18s;z-index:10}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:860px){
+  .app{flex-direction:column;height:auto}
+  .side{width:100%;max-height:44vh;border-right:0;border-bottom:1px solid var(--line)}
+  .m-body{padding:16px 14px 60px}
+  .m-head{padding:14px}
+  .add-ad{grid-template-columns:1fr auto}
+  .add-ad input:nth-child(2),.add-ad input:nth-child(3){grid-column:1/-1}
+  .row,.row.all{grid-template-columns:28px 1fr auto 28px;gap:6px 8px}
+  .row .urlw,.row .note,.row .prod{grid-column:2/-1}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== Productos ===== -->
+  <aside class="side">
+    <div class="side-head">
+      <p class="side-title">Creative Engine 🧑‍🍳</p>
+      <form class="add-product" id="addProduct" autocomplete="off">
+        <input type="text" id="pName" placeholder="Nuevo producto" maxlength="60">
+        <button type="submit" aria-label="Añadir producto">+</button>
+      </form>
+      <div class="search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input type="text" id="pSearch" placeholder="Buscar producto…">
+      </div>
+    </div>
+    <div class="plist" id="plist"></div>
+    <div class="side-foot">
+      <button type="button" id="export">Exportar copia</button>
+      <button type="button" id="import">Importar</button>
+      <input type="file" id="importFile" accept="application/json" hidden>
+    </div>
+  </aside>
+
+  <!-- ===== Anuncios del producto ===== -->
+  <main class="main" id="main"></main>
+</div>
+<div class="toast" id="toast"></div>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+(function(){
+'use strict';
+const KEY = 'anuncios_productos_v1';
+const STATUS = ['cola', 'curso', 'hecho'];
+const LABEL  = { cola:'En cola', curso:'En curso', hecho:'Hecho' };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const fmtDay = new Intl.DateTimeFormat('es-ES', { day:'numeric', month:'short' });
+
+/* ---------- datos ---------- */
+let state = load();
+let hideDone = false;
+function load(){
+  try{ const s = JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.products)) return s; }catch(e){}
+  return { products: [], selected: 'all' };
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+const findP = id => state.products.find(p => p.id === id);
+const pending = p => p.ads.filter(a => a.status !== 'hecho').length;
+const count = (p, st) => p.ads.filter(a => a.status === st).length;
+
+function normalizeUrl(u){
+  u = (u || '').trim();
+  if (!u) return '';
+  if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(u)) u = 'https://' + u;
+  try{ const x = new URL(u); return /^https?:$/.test(x.protocol) ? x.href : ''; }catch(e){ return ''; }
+}
+let toastT;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1500);
+}
+
+/* ---------- sidebar ---------- */
+const plist = document.getElementById('plist');
+const pSearch = document.getElementById('pSearch');
+function renderSide(){
+  const q = pSearch.value.trim().toLowerCase();
+  plist.innerHTML = '';
+  const all = document.createElement('button');
+  all.className = 'pitem all' + (state.selected === 'all' ? ' active' : '');
+  const totCurso = state.products.reduce((n,p) => n + count(p,'curso'), 0);
+  const totCola  = state.products.reduce((n,p) => n + count(p,'cola'), 0);
+  all.innerHTML = `<span class="nm">Board</span><span class="cnt">${totCurso ? `<span class="b curso">${totCurso}</span>` : ''}${totCola ? `<span class="b cola">${totCola}</span>` : ''}</span>`;
+  all.addEventListener('click', () => { state.selected = 'all'; save(); render(); });
+  plist.appendChild(all);
+
+  state.products.forEach(p => {
+    if (q && !p.name.toLowerCase().includes(q)) return;
+    const b = document.createElement('button');
+    b.className = 'pitem' + (state.selected === p.id ? ' active' : '');
+    const nc = count(p,'curso'), nq = count(p,'cola');
+    b.innerHTML = `<span class="nm"></span><span class="cnt">${nc ? `<span class="b curso" title="En curso">${nc}</span>` : ''}${nq ? `<span class="b cola" title="En cola">${nq}</span>` : ''}${!nc && !nq ? `<span class="b" title="Todo hecho">${p.ads.length}</span>` : ''}</span>`;
+    b.querySelector('.nm').textContent = p.name;
+    b.addEventListener('click', () => { state.selected = p.id; save(); render(); });
+    plist.appendChild(b);
+  });
+  if (!state.products.length) plist.insertAdjacentHTML('beforeend', '<div class="empty" style="font-size:13px">Añade tu primer producto arriba.</div>');
+}
+
+/* ---------- filas de anuncio ---------- */
+const TICK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const OPEN = '<svg class="i" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14L21 3"/></svg>';
+
+/* popup con el texto completo al pasar el cursor (se queda mientras el cursor esté sobre la celda o sobre el popup) */
+const tip = document.getElementById('tip');
+let showT, hideT, tipOwner = null;
+const truncated = el => el.scrollWidth > el.clientWidth + 1;
+function showTip(el, txt, asLink){
+  tip.innerHTML = '';
+  if (asLink){ const a = document.createElement('a'); a.href = asLink; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = txt; tip.appendChild(a); }
+  else tip.textContent = txt;
+  tip.hidden = false; tipOwner = el;
+  const r = el.getBoundingClientRect();
+  tip.style.left = Math.max(8, Math.min(r.left, window.innerWidth - tip.offsetWidth - 12)) + 'px';
+  const top = r.bottom + 6;
+  tip.style.top = (top + tip.offsetHeight > window.innerHeight ? r.top - tip.offsetHeight - 6 : top) + 'px';
+}
+function hideTip(){ clearTimeout(showT); clearTimeout(hideT); tip.hidden = true; tipOwner = null; }
+function scheduleHide(){ clearTimeout(hideT); hideT = setTimeout(hideTip, 160); }
+tip.addEventListener('mouseenter', () => clearTimeout(hideT));
+tip.addEventListener('mouseleave', scheduleHide);
+/* always = enseñar siempre que haya texto; si no, solo cuando la celda lo corta */
+function attachTip(el, getText, always, getLink){
+  el.addEventListener('mouseenter', () => {
+    clearTimeout(hideT);
+    const txt = (getText() || '').trim();
+    if (!txt || !(always || truncated(el))) return;
+    clearTimeout(showT);
+    showT = setTimeout(() => showTip(el, txt, getLink ? getLink() : null), 200);
+  });
+  el.addEventListener('mouseleave', () => { clearTimeout(showT); scheduleHide(); });
+  el.addEventListener('mousedown', hideTip);
+  el.addEventListener('input', () => { if (tipOwner === el) hideTip(); });
+}
+
+function adRow(p, a, showProduct){
+  const done = a.status === 'hecho';
+  const row = document.createElement('div');
+  row.className = 'row' + (done ? ' done' : '') + (showProduct ? ' all' : '');
+  row.innerHTML = `
+    <button class="chk" type="button" title="${done ? 'Marcar como pendiente' : 'Marcar como hecho'}">${TICK}</button>
+    ${showProduct ? '<span class="prod" title="Ir al producto"></span>' : ''}
+    <span class="ro t"></span>
+    <span class="ro u"></span>
+    <span class="ro note"></span>
+    <div style="display:flex;align-items:center;gap:6px"><button class="st ${a.status}" type="button" title="Cambiar estado">${LABEL[a.status]}</button>${done && a.done ? `<span class="when">${fmtDay.format(new Date(a.done))}</span>` : ''}</div>
+    <button class="del" type="button" title="Eliminar">×</button>`;
+  if (showProduct){
+    const pr = row.querySelector('.prod'); pr.textContent = p.name;
+    pr.addEventListener('click', () => { state.selected = p.id; save(); render(); });
+  }
+  // solo lectura: nombre, link (clicable) y comentario
+  row.querySelector('.ro.t').textContent = a.title || '—';
+  const u = normalizeUrl(a.url), uc = row.querySelector('.ro.u');
+  if (u){ const l = document.createElement('a'); l.href = u; l.target = '_blank'; l.rel = 'noopener noreferrer'; l.textContent = a.url; uc.appendChild(l); } else uc.textContent = a.url || '—';
+  const nc = row.querySelector('.ro.note'); nc.textContent = a.note || '—';
+  attachTip(row.querySelector('.ro.t'), () => a.title);
+  attachTip(uc, () => a.url, false, () => u);
+  attachTip(nc, () => a.note, true);
+
+  const setStatus = st => { a.status = st; a.done = st === 'hecho' ? Date.now() : null; save(); render(); };
+  row.querySelector('.chk').addEventListener('click', () => setStatus(a.status === 'hecho' ? 'cola' : 'hecho'));
+  row.querySelector('.st').addEventListener('click', () => setStatus(STATUS[(STATUS.indexOf(a.status) + 1) % STATUS.length]));
+  row.querySelector('.del').addEventListener('click', () => {
+    if (confirm(`¿Eliminar "${a.title || 'este anuncio'}"?`)){ p.ads = p.ads.filter(x => x.id !== a.id); save(); render(); }
+  });
+  return row;
+}
+
+function group(container, st, items, showProduct, extra){
+  const card = document.createElement('section');
+  card.className = 'card';
+  card.innerHTML = `<div class="g-head"><span class="dot ${st}"></span>${LABEL[st]}${st === 'hecho' ? 's' : ''} <span class="n">${items.length}</span><span class="sp"></span>${extra || ''}</div>`;
+  const body = document.createElement('div');
+  if (!items.length) body.innerHTML = `<div class="empty" style="padding:18px 0">Nada ${st === 'hecho' ? 'hecho todavía' : st === 'curso' ? 'en curso' : 'en cola'}.</div>`;
+  items.forEach(({p, a}) => body.appendChild(adRow(p, a, showProduct)));
+  card.appendChild(body);
+  container.appendChild(card);
+  return card;
+}
+
+/* ---------- main ---------- */
+const main = document.getElementById('main');
+function renderMain(){
+  main.innerHTML = '';
+  if (state.selected === 'all' || !findP(state.selected)){
+    state.selected = 'all';
+    main.innerHTML = `
+      <div class="m-head"><input class="m-title" value="Board" readonly><span class="m-sub">${state.products.length} producto${state.products.length === 1 ? '' : 's'}</span></div>
+      <div class="m-body" id="mbody"></div>`;
+    const body = main.querySelector('#mbody');
+    if (!state.products.length){ body.innerHTML = '<div class="empty-main">Añade un producto en la columna de la izquierda para empezar.</div>'; return; }
+    const curso = [], cola = [];
+    state.products.forEach(p => p.ads.forEach(a => { if (a.status === 'curso') curso.push({p, a}); else if (a.status === 'cola') cola.push({p, a}); }));
+    group(body, 'curso', curso, true);
+    group(body, 'cola', cola, true);
+    return;
+  }
+
+  const p = findP(state.selected);
+  main.innerHTML = `
+    <div class="m-head">
+      <input class="m-title" id="pTitle" maxlength="60" title="Haz clic para renombrar">
+      <span class="m-sub">${pending(p)} pendiente${pending(p) === 1 ? '' : 's'} · ${count(p,'hecho')} hecho${count(p,'hecho') === 1 ? '' : 's'}</span>
+      <button class="icon-btn" id="delProduct" type="button" title="Eliminar producto"><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
+    </div>
+    <div class="m-body">
+      <form class="add-ad" id="addAd" autocomplete="off">
+        <input type="text" name="title" placeholder="Anuncio" maxlength="140">
+        <input type="text" name="url" placeholder="Link" maxlength="2000">
+        <input type="text" name="note" placeholder="Comentario" maxlength="300">
+        <button type="submit" aria-label="Añadir anuncio">+</button>
+      </form>
+      <div id="groups"></div>
+    </div>`;
+  const t = main.querySelector('#pTitle'); t.value = p.name;
+  t.addEventListener('change', () => { const v = t.value.trim(); if (v){ p.name = v; save(); renderSide(); } else t.value = p.name; });
+  t.addEventListener('keydown', e => { if (e.key === 'Enter') t.blur(); });
+  main.querySelector('#delProduct').addEventListener('click', () => {
+    if (confirm(`¿Eliminar "${p.name}" con sus ${p.ads.length} anuncio(s)?`)){ state.products = state.products.filter(x => x.id !== p.id); state.selected = 'all'; save(); render(); }
+  });
+  const form = main.querySelector('#addAd');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const title = form.title.value.trim();
+    if (!title){ form.title.focus(); return; }
+    p.ads.push({ id: uid(), title, url: form.url.value.trim(), note: form.note.value.trim(), status: 'cola', created: Date.now(), done: null });
+    save(); render();
+    main.querySelector('#addAd input[name="title"]').focus();
+  });
+
+  const g = main.querySelector('#groups');
+  const by = st => p.ads.filter(a => a.status === st).map(a => ({p, a}));
+  group(g, 'curso', by('curso'), false);
+  group(g, 'cola', by('cola'), false);
+  const done = by('hecho').sort((x,y) => (y.a.done || 0) - (x.a.done || 0));
+  const card = group(g, 'hecho', hideDone ? [] : done, false, `<button type="button" id="toggleDone">${hideDone ? 'Mostrar' : 'Ocultar'}</button>`);
+  if (hideDone) card.querySelector('.empty').textContent = `${done.length} oculto${done.length === 1 ? '' : 's'}`;
+  card.querySelector('#toggleDone').addEventListener('click', () => { hideDone = !hideDone; renderMain(); });
+}
+
+function render(){ hideTip(); renderSide(); renderMain(); }
+
+/* ---------- productos ---------- */
+document.getElementById('addProduct').addEventListener('submit', e => {
+  e.preventDefault();
+  const inp = document.getElementById('pName');
+  const name = inp.value.trim();
+  if (!name){ inp.focus(); return; }
+  const dup = state.products.find(p => p.name.toLowerCase() === name.toLowerCase());
+  if (dup){ state.selected = dup.id; inp.value = ''; save(); render(); return; }
+  const p = { id: uid(), name, ads: [], created: Date.now() };
+  state.products.push(p);
+  state.selected = p.id;
+  inp.value = ''; pSearch.value = '';
+  save(); render();
+  const f = main.querySelector('#addAd input[name="title"]'); if (f) f.focus();
+});
+pSearch.addEventListener('input', renderSide);
+
+/* ---------- copia de seguridad ---------- */
+document.getElementById('export').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `anuncios-productos-${new Date().toISOString().slice(0,10)}.json`;
+  a.click(); URL.revokeObjectURL(a.href);
+  toast('Copia descargada');
+});
+document.getElementById('import').addEventListener('click', () => document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try{
+      const s = JSON.parse(r.result);
+      if (!s || !Array.isArray(s.products)) throw 0;
+      if (!confirm(`Importar ${s.products.length} producto(s). Esto sustituye lo que hay ahora. ¿Seguir?`)) return;
+      state = s; state.selected = 'all'; save(); render(); toast('Importado');
+    }catch(_){ toast('El archivo no es válido'); }
+  };
+  r.readAsText(f); e.target.value = '';
+});
+
+render();
+})();
+</script>
+</body>
+</html>
